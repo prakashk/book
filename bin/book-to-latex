@@ -2,8 +2,25 @@
 use strict;
 use Pod::PseudoPod::LaTeX 1.101050;
 
+sub papersize {
+    my $papersize = `/usr/bin/paperconf`;
+    if ($papersize) {
+        chomp $papersize;
+    }
+    else {
+        $papersize = $ENV{PAPERSIZE};
+    }
+
+    return $papersize || 'a4';
+}
+
+my $papersize = papersize() . 'paper';
+
+print <<"DOCUMENTCLASS";
+\\documentclass[11pt,$papersize,oneside]{report}
+DOCUMENTCLASS
+
 print <<'HEADER';
-\documentclass[11pt,a4paper,oneside]{report}
 \usepackage{graphics,graphicx}
 \usepackage{colortbl}
 \usepackage{fancyvrb}
