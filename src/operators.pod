@@ -24,7 +24,7 @@ horizontal bars.
 
 
     for @scores {
-        printf "%-${label-area-width}s%s\n", .key, 'X' x ($unit * .value);
+        printf "%-{$label-area-width}s%s\n", .key, 'X' x ($unit * .value);
     }
 
 =end programlisting
