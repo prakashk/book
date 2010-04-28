@@ -23,8 +23,7 @@ number of C<X> characters to represent horizontal bars.
     my $unit             = ($screen-width - $label-area-width) / $max-score;
 
     for @scores {
-        my $format = '%- ' ~ $label-area-width ~ "s%s\n";
-        printf $format, .key, 'X' x ($unit * .value);
+        printf "%-{$label-area-width}s%s\n", .key, 'X' x ($unit * .value);
     }
 
 =end programlisting
@@ -65,7 +64,7 @@ X< operator; fat arrow>
 The C<< => >> operator (the C<fat arrow>) constructs C<Pair>
 objects. A Pair stores a key and a value; the key is on the left-hand side of
 the C<< => >> operator, the value on the right. It also has a specialty: if
-the value on the right is a bare identifier, it is taken to be a string. So one
+the key on the left is an identifier, it is taken to be a string. So one
 could also write the example above as
 
 =begin programlisting
@@ -192,7 +191,7 @@ Now all the necessary informations are in place and the chart can be printed:
 =begin programlisting
 
     for @scores {
-        printf "%- {$label-area-width}s%s\n", .key, 'X' x ($unit * .value);
+        printf "%-{$label-area-width}s%s\n", .key, 'X' x ($unit * .value);
     }
 
 =end programlisting
@@ -206,7 +205,7 @@ X<printf>
 It is similar to C<printf> functions of the C and Perl 5 programming
 languages. It takes a format string, which specifies how to print the
 following parameters. If C<$label-area-width> is 8, the format string is
-C<"%- 8s%s\n">, which means a string (C<'s'>) filled to 8 spaces (C<' 8'>) and
+C<"%-8s%s\n">, which means a string (C<'s'>) filled to 8 spaces (C<'8'>) and
 left-justified (C<'-'>), followed by another string and a newline.
 
 The first string is the name of the player, the second is the bar.
