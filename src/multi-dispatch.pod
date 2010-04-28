@@ -18,10 +18,7 @@ U<http://github.com/moritz/json/>.
 
 =begin programlisting
 
-    # TODO: Clarify numeric types. Only need one of the following two, but
-    # maybe s/Num/Numeric/.
-    multi to-json(Num  $d) { ~$d }
-    multi to-json(Int  $d) { ~$d }
+    multi to-json(Real  $d) { ~$d }
     multi to-json(Bool $d) { $d ?? 'true' !! 'false'; }
     multi to-json(Str  $d) {
         '"'
@@ -63,15 +60,15 @@ The various candidates all look like:
 =begin programlisting
 
     multi to-json(Bool $data) { code here }
-    multi to-json(Num  $data) { code here }
+    multi to-json(Real $data) { code here }
 
 =end programlisting
 
 Which one is actually called depends on the type of the data passed to the
 subroutine.  If you call C<to-json(Bool::True)>, the first one is called. If
-you pass a C<Num> instead, the second one is called.
+you pass a numeric value of type C<Real> instead, the second one is called.
 
-The candidates for handling C<Num> and C<Int> are very simple; because JSON's
+The candidate for handling C<Real> is very simple; because JSON's
 and Perl 6's number formats coincide, the JSON converter can rely on Perl's
 conversion of these numbers to strings. The C<Bool> candidate returns a literal
 string C<'true'> or C<'false'>.
@@ -141,22 +138,34 @@ this to count how often a type check occurs:
     multi a($x where { $counter++; True }) { };
 
     a(3);
-    say $counter;
+    say $counter;       # says B<0>
     a('str');
-    say $counter;
+    say $counter;       # says B<2>
 
 =end programlisting
+
+This code defines three multis, one of which increases a counter whenever its
+C<where> clause executes.  Any Perl 6 compiler is free to optimize away type
+checks it knows will succeed.  In the current Rakudo implementation, the second
+line with C<say> will print a higher number than the first.
+
+The first C<$counter> output is always C<0>, since the nominal types
+alone already determine which candidate matches best, so the where-block
+is never executed.
+
+The second output is at least C<1>. The compiler has to execute the
+where-block at least once to check if the third candidate can be called, but
+the specification does not require the minimal possible number of runs.
+This is illustrated in the second C<$counter> output. The specific
+implementation used to run this test actually executes the where-block twice.
+Keep in mind that the number of times the subtype checks blocks are
+executed is implementation specific.
 
 =for author
 
 Verify Rakudo * behavior at press time.
 
 =end for
-
-This code defines three multis, one of which increases a counter whenever its
-C<where> clause executes.  Any Perl 6 compiler is free to optimize away type
-checks it knows will succeed.  In the current Rakudo implementation, the second
-line with C<say> will print a higher number than the first.
 
 =begin sidebar
 
@@ -308,7 +317,7 @@ X<parameters; anonymous>
 
 The only new thing here is that the parameters don't have names. The bodies of
 the subroutines do not use them, so there's no reason to force the programmer
-to name them.  A C<$> in a signature stands for a single, anonymous scalar
+to name them.  A single C<$> in a signature stands for an anonymous scalar
 variable.
 
 X<types; capture>
@@ -448,7 +457,7 @@ latter by installing a I<proto> routine:
 Nearly all Perl 6 built-in functions and operators export a proto definition,
 which prevents accidental overriding of built-insN<One of the very rare
 exceptions is the smart match operator C<< infix:<~~> >> which is not easily
-overloadable.  Instead it redispatches to overloadable multi methods.>>.
+overloadable.  Instead it redispatches to overloadable multi methods.>.
 
 =begin sidebar
 
