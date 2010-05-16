@@ -40,6 +40,7 @@ HEADER
 
 for (@ARGV) {
     my $parser = Pod::PseudoPod::LaTeX->new();
+    $parser->accept_targets_as_text(qw( screen ));
     $parser->codes_in_verbatim(1);
     $parser->output_fh( *STDOUT );
     $parser->parse_file( $_ );
